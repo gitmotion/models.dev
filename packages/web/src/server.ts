@@ -1,14 +1,22 @@
 import Index from "../index.html";
-import { Rendered } from "./render";
+import { Providers, Rendered } from "./render";
 import path from "path";
 
 Bun.serve({
   port: 16_000,
   routes: {
     "/": Index,
+    "/api.json": () => {
+      return new Response(JSON.stringify(Providers), {
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          "Cache-Control": "public, max-age=300",
+        },
+      });
+    },
     "/assets/*": (req) => {
       const file = Bun.file(
-        path.join(import.meta.dir, new URL(req.url).pathname)
+        path.join(import.meta.dir, new URL(req.url).pathname),
       );
       return new Response(file);
     },
@@ -22,7 +30,7 @@ Bun.serve({
         "..",
         "providers",
         provider,
-        "logo.svg"
+        "logo.svg",
       );
       const defaultLogoPath = path.join(
         import.meta.dir,
@@ -30,7 +38,7 @@ Bun.serve({
         "..",
         "..",
         "providers",
-        "logo.svg"
+        "logo.svg",
       );
 
       let file = Bun.file(logoPath);
